@@ -1,2 +1,2 @@
 # rx_android
-Rx in Android
+Thread And ANR in android
