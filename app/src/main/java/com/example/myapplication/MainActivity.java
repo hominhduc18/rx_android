@@ -50,13 +50,6 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(@NonNull Long longNumber) { //
                 Log.e("SUB", "onNext" + longNumber);
 
-                if(longNumber == 5 ){
-                    mdisposable.dispose();
-                }
-
-
-
-
             }
 
             @Override
@@ -75,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private Observable<Long> getObSerVerBleUser(){
 
 
-        return  Observable.interval(3, 5, TimeUnit.SECONDS);
+        return  Observable.timer(3, TimeUnit.SECONDS);// delay 3s
 
 
 
