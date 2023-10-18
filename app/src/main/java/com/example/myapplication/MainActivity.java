@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Observable<Serializable> observable = getObSerVerBleUser();
-        Observer<Serializable> Observer = getObserverUser();
+        Observable<Long> observable = getObSerVerBleUser();
+        Observer<Long> Observer = getObserverUser();
 
         // dang ky lang nghe,lien ket 2 tahng lai
         observable.subscribeOn(Schedulers.io())
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private Observer<Serializable> getObserverUser(){
-        return new Observer<Serializable>() {
+    private Observer<Long> getObserverUser(){
+        return new Observer<Long>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {// khi 2 thang lawng nghe nhau
                 Log.e("SUB", "onSubscribe");
@@ -46,38 +47,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(@NonNull Serializable serializable) { //
-                Log.e("SUB", "onNext" + serializable.toString());
+            public void onNext(@NonNull Long longNumber) { //
+                Log.e("SUB", "onNext" + longNumber);
 
-                Log.e("SUB","observer Next" + Thread.currentThread().getName());
-// so sanh kieu dua lieu minh nhan duoc
-
-                // + nếu kiểu đưa vào là một array
-                if(serializable instanceof User[]){
-                    User[] users = (User[]) serializable;
-
-                    for(User user: users ){
-                        Log.e("SUB", "User infor" + serializable.toString());
-                    }
+                if(longNumber == 5 ){
+                    mdisposable.dispose();
                 }
-                // + nếu kiểu đưa vào là một String
-                else if (serializable instanceof  String) {
-                    String mystr = (String) serializable;
-                    Log.e("SUB", "User infor " + mystr);
 
-                }
-                // + nếu kiểu đưa vào là một object
-                else if (serializable instanceof User) {
-                    User user = (User) serializable;
-                    Log.e("SUB", "User infor" + user.toString());
 
-                } else if (serializable instanceof List) {
-                    List<User> list  = (List<User>) serializable;
-                    for(User user: list){
-                        Log.e("SUB", "User infor  " + user.toString());
-                    }
 
-                }
 
             }
 
@@ -94,50 +72,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-    private Observable getObSerVerBleUser(){
-        // đối với kiểu data Là một List thì bỏ khai báo Observable<serializable> trên pt
-        // còn ở các chổi gọi có thể để hoặc cũng có thể xóa đi cũng đc ko ảnh hưởng
-        List<User> listenUser = getListUser();
-        // cachs taoj observerble wwith create
-//        return Observable.create(new ObservableOnSubscribe<User>() {
-//            @Override
-//            public void subscribe(@NonNull ObservableEmitter<User> emitter) throws Throwable {
-//                Log.e("SUB","observable" + Thread.currentThread().getName());
-//                if(listenUser == null || listenUser.isEmpty()){
-//                    if(emitter.isDisposed()){
-//                        emitter.onError(new Exception());
-//                    }
-//                }
-//                for(User user: listenUser){
-//                        if(!emitter.isDisposed()){// chuwa bi huy connect
-//                            emitter.onNext(user);  // phat di dua lieu
-//
-//                        }
-//                    }
-//                    if(!emitter.isDisposed()){
-//                        emitter.onComplete();
-//                    }
-//            }
-//        });
-        // xuwr lys 3 data khacs nhau
-        User user1 = new User(1, "a");
-        User user2 = new User(2, "a");
-        // trường hợp truyền vào một object thì bên model phải implement Serializable
-        User user4 = new User(4, "b");
-
-        String strDta = "hehe";// cos theer truyeenf vaof String
-
-        User[] usersArray = new User[]{user1, user2}; // mang
-
-        return  Observable.just(usersArray, strDta, user4, listenUser);
+    private Observable<Long> getObSerVerBleUser(){
 
 
-        /*
-        Tổng kết nếu kiểu dữ liệu array , string , object thì phương thức phải để kiểu <Serializable>
-        Trường hopwj đối với List thì phương thức ko để <Serializable>
-        nếu List nằm trong với 3 kiểu trên thì ko cần <Serializable>
-        trường hiợp là 1 object thì bên model phải implement Serializable nó mới chạy ra object
-        * */
+        return  Observable.interval(3, 5, TimeUnit.SECONDS);
+
+
+
     }
     private List<User> getListUser(){
         List<User> list = new ArrayList<>();
