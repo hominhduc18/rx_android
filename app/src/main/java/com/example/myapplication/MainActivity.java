@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Observable<Long> observable = getObSerVerBleUser();
-        Observer<Long> Observer = getObserverUser();
+        Observable<Integer> observable = getObSerVerBleUser();
+        Observer<Integer> Observer = getObserverUser();
 
         // dang ky lang nghe,lien ket 2 tahng lai
         observable.subscribeOn(Schedulers.io())
@@ -37,21 +37,18 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(Observer);
 
     }
-
-    private Observer<Long> getObserverUser(){
-        return new Observer<Long>() {
+    private Observer<Integer> getObserverUser(){
+        return new Observer<Integer>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {// khi 2 thang lawng nghe nhau
                 Log.e("SUB", "onSubscribe");
                 mdisposable = d;
             }
-
             @Override
-            public void onNext(@NonNull Long longNumber) { //
-                Log.e("SUB", "onNext" + longNumber);
+            public void onNext(@NonNull Integer intNumber) { //
+                Log.e("SUB", "onNext" + intNumber);
 
             }
-
             @Override
             public void onError(@NonNull Throwable e){
                 Log.e("SUB","onError");
@@ -65,13 +62,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-    private Observable<Long> getObSerVerBleUser(){
-
-
-        return  Observable.timer(3, TimeUnit.SECONDS);// delay 3s
-
-
-
+    private Observable<Integer> getObSerVerBleUser(){
+        return  Observable.range(1, 10);// delay 3s
     }
     private List<User> getListUser(){
         List<User> list = new ArrayList<>();
