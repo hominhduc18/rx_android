@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -26,18 +28,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Observable<User> observable = getObSerVerBleUser();
-        Observer<User> Observer = getObserverUser();
+        Observable<Long> observable = getObSerVerBleUser();
+        Observer<Long> Observer = getObserverUser();
 
-        // dang ky lang nghe
+        // dang ky lang nghe,lien ket 2 tahng lai
         observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread()) // nhaanj data
                 .subscribe(Observer);
 
     }
 
-    private Observer<User> getObserverUser(){
-        return new Observer<User>() {
+    private Observer<Long> getObserverUser(){
+        return new Observer<Long>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {// khi 2 thang lawng nghe nhau
                 Log.e("SUB", "onSubscribe");
@@ -45,8 +47,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(@NonNull User user) { //
-                Log.e("SUB", "onNext" + user.toString());
+            public void onNext(@NonNull Long longNumber) { //
+                Log.e("SUB", "onNext" + longNumber);
+
+                if(longNumber == 5 ){
+                    mdisposable.dispose();
+                }
+
+
+
 
             }
 
@@ -58,30 +67,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
             Log.e("SUB", "onComplete");
+                Log.e("SUB","observer complete" + Thread.currentThread().getName());
+
             }
         };
     }
-    private Observable<User> getObSerVerBleUser(){
-        List<User> listenUser = getListUser();
-        return Observable.create(new ObservableOnSubscribe<User>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<User> emitter) throws Throwable {
-                if(listenUser == null || listenUser.isEmpty()){
-                    if(emitter.isDisposed()){
-                        emitter.onError(new Exception());
-                    }
-                }
-                for(User user: listenUser){
-                        if(!emitter.isDisposed()){// chuwa bi huy connect
-                            emitter.onNext(user);  // phat di dua lieu
+    private Observable<Long> getObSerVerBleUser(){
 
-                        }
-                    }
-                    if(!emitter.isDisposed()){
-                        emitter.onComplete();
-                    }
-            }
-        });
+
+        return  Observable.interval(3, 5, TimeUnit.SECONDS);
+
+
 
     }
     private List<User> getListUser(){
