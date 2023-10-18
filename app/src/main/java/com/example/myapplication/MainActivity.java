@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
     private Observable<Integer> getObSerVerBleUser(){
-        return  Observable.range(1, 10);// delay 3s
+        return  Observable.range(1, 5).repeat();
     }
     private List<User> getListUser(){
         List<User> list = new ArrayList<>();
