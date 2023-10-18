@@ -29,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
         Observable<User> observable = getObSerVerBleUser();
         Observer<User> Observer = getObserverUser();
 
-        // dang ky lang nghe
+        // dang ky lang nghe,lien ket 2 tahng lai
         observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread()) // nhaanj data
                 .subscribe(Observer);
 
     }
@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(@NonNull User user) { //
                 Log.e("SUB", "onNext" + user.toString());
 
+                Log.e("SUB","observer Next" + Thread.currentThread().getName());
+
             }
 
             @Override
@@ -58,30 +60,38 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
             Log.e("SUB", "onComplete");
+                Log.e("SUB","observer complete" + Thread.currentThread().getName());
+
             }
         };
     }
     private Observable<User> getObSerVerBleUser(){
-        List<User> listenUser = getListUser();
-        return Observable.create(new ObservableOnSubscribe<User>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<User> emitter) throws Throwable {
-                if(listenUser == null || listenUser.isEmpty()){
-                    if(emitter.isDisposed()){
-                        emitter.onError(new Exception());
-                    }
-                }
-                for(User user: listenUser){
-                        if(!emitter.isDisposed()){// chuwa bi huy connect
-                            emitter.onNext(user);  // phat di dua lieu
-
-                        }
-                    }
-                    if(!emitter.isDisposed()){
-                        emitter.onComplete();
-                    }
-            }
-        });
+//        List<User> listenUser = getListUser();
+        // cachs taoj observerble wwith create
+//        return Observable.create(new ObservableOnSubscribe<User>() {
+//            @Override
+//            public void subscribe(@NonNull ObservableEmitter<User> emitter) throws Throwable {
+//                Log.e("SUB","observable" + Thread.currentThread().getName());
+//                if(listenUser == null || listenUser.isEmpty()){
+//                    if(emitter.isDisposed()){
+//                        emitter.onError(new Exception());
+//                    }
+//                }
+//                for(User user: listenUser){
+//                        if(!emitter.isDisposed()){// chuwa bi huy connect
+//                            emitter.onNext(user);  // phat di dua lieu
+//
+//                        }
+//                    }
+//                    if(!emitter.isDisposed()){
+//                        emitter.onComplete();
+//                    }
+//            }
+//        });
+        User user1 = new User(1, "a");
+        User user2 = new User(2, "a");
+        User[] usersArray = new User[]{user1, user2};
+        return  Observable.fromArray(usersArray);
 
     }
     private List<User> getListUser(){
