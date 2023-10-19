@@ -1,9 +1,15 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,65 +27,47 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Disposable mdisposable ;
+    private DataAdapter mDataAdapter;
+    private RecyclerView rcvData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button btncallApi = findViewById(R.id.btn_call_api);
+        rcvData = findViewById(R.id.rc_data); // Update this line
 
-        Observable<Integer> observable = getObSerVerBleUser();
-        Observer<Integer> Observer = getObserverUser();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rcvData.setLayoutManager(linearLayoutManager);
 
-        // dang ky lang nghe,lien ket 2 tahng lai
-        observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()) // nhaanj data
-                .subscribe(Observer);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        rcvData.addItemDecoration(dividerItemDecoration);
 
-    }
-    private Observer<Integer> getObserverUser(){
-        return new Observer<Integer>() {
+        btncallApi.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSubscribe(@NonNull Disposable d) {// khi 2 thang lawng nghe nhau
-                Log.e("SUB", "onSubscribe");
-                mdisposable = d;
+            public void onClick(View v) {
+                onclickCallApi();
             }
-            @Override
-            public void onNext(@NonNull Integer intNumber) { //
-                Log.e("SUB", "onNext" + intNumber);
-
-            }
-            @Override
-            public void onError(@NonNull Throwable e){
-                Log.e("SUB","onError");
-        }
-
-            @Override
-            public void onComplete() {
-            Log.e("SUB", "onComplete");
-                Log.e("SUB","observer complete" + Thread.currentThread().getName());
-
-            }
-        };
+        });
     }
-    private Observable<Integer> getObSerVerBleUser(){
-        return  Observable.range(1, 5).repeat();
+
+
+    private void onclickCallApi(){
+        mDataAdapter = new DataAdapter(getListData());
+        rcvData.setAdapter(mDataAdapter);
     }
-    private List<User> getListUser(){
-        List<User> list = new ArrayList<>();
-        list.add(new User(1,"a"));
-        list.add(new User(2,"b"));
-        list.add(new User(3,"c"));
-        list.add(new User(4,"d"));
-        list.add(new User(5,"e"));
-        list.add(new User(6,"f"));
-        list.add(new User(7,"g"));
+    private List<ObjectData> getListData(){
+        List<ObjectData> list = new ArrayList<>();
+
+        list.add(new ObjectData("title 1", "body 1"));
+        list.add(new ObjectData("title 2", "body 2"));
+        list.add(new ObjectData("title 3", "body 3"));
+        list.add(new ObjectData("title 4", "body 4"));
+        list.add(new ObjectData("title 5", "body 5"));
+
+
+
         return list;
-    }
-    protected  void onDestroy(){
-        super.onDestroy();
-        if(mdisposable != null){
-            mdisposable.dispose();
-        }
     }
 }
