@@ -2,7 +2,11 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 
-public class User {
+import java.io.Serializable;
+
+import io.reactivex.rxjava3.core.Observable;
+
+public class User implements Serializable {
 
     private int id;
     private String name;
@@ -35,4 +39,13 @@ public class User {
                 ", name='" + name + '\'' +
                 '}';
     }
+    public Observable<String> getNameObservable(){
+        return Observable.just(name);
+
+    }
+
+    public Observable<String> getNameDeferObservable(){
+        return Observable.defer(() -> Observable.just(name));
+    }
+
 }
